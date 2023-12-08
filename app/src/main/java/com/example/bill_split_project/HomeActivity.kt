@@ -54,7 +54,6 @@ class HomeActivity : AppCompatActivity() {
             bundle.putStringArray("passArray", userArray)
             bundle.putInt("counter", counter)
             bundle.putString("passUsername", username)
-            bundle.putInt("passParty", party)
             fragment.arguments = bundle
         }
     }

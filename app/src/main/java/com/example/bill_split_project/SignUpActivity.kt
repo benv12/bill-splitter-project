@@ -1,10 +1,12 @@
 package com.example.bill_split_project
 
 import android.content.Intent
+import android.database.sqlite.SQLiteConstraintException
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
+import android.widget.Toast
 import com.example.bill_split_project.databinding.ActivitySignUpBinding
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
@@ -16,15 +18,24 @@ class SignUpActivity : AppCompatActivity() {
     private lateinit var appDb: AppDatabase
 
     private var username: String? = null
+    private var userArray=Array(100){""}
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivitySignUpBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
+        appDb = AppDatabase.getDatabase(this)
+
         enablePassword()
 
         binding.btnSignUp.setOnClickListener{
             signUp()
+
+        }
+
+        binding.btnBack.setOnClickListener{
+            goBack()
         }
     }
     private fun enablePassword(){
@@ -54,22 +65,33 @@ class SignUpActivity : AppCompatActivity() {
         val password = binding.etPassword1.text.toString()
 
         if(username.isNotEmpty()&&password.isNotEmpty()){
+                val user = User(
+                    null,username,password
+                )
 
-            val user = User(
-                null,username,password
-            )
+                GlobalScope.launch(Dispatchers.IO){
 
-            GlobalScope.launch(Dispatchers.IO){
+                    appDb.userDao().insert(user)
 
-                appDb.userDao().insert(user)
+                }
+                sendData()
 
-            }
-            sendData()
-
-            binding.etUsername1.text.clear()
-            binding.etPassword1.text.clear()
-
+                binding.etUsername1.text.clear()
+                binding.etPassword1.text.clear()
         }
+    }
+
+    private fun checkUsername(): Boolean{
+        val username = binding.etUsername1.text.toString()
+        GlobalScope.launch {
+            userArray = appDb.userDao().getUsername()
+        }
+            for(i in 0..userArray.size-1){
+                if(userArray[i].equals(username))
+                    return false
+            }
+
+        return true
     }
 
     private fun sendData(){
@@ -79,6 +101,11 @@ class SignUpActivity : AppCompatActivity() {
             it.putExtra("passUsername", username)
             startActivity(it)
         }
+    }
+
+    private fun goBack(){
+        val intent = Intent(this, MainActivity::class.java)
+        startActivity(intent)
     }
 
 }

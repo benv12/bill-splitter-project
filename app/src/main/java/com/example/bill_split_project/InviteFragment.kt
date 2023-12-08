@@ -117,7 +117,6 @@ class InviteFragment : Fragment() {
             intent.putExtra("passArray", array)
             intent.putExtra("counter", counter)
             intent.putExtra("passUsername", username)
-            intent.putExtra("passParty", counter)
             startActivity(intent)
 
             /*val bundle = Bundle()

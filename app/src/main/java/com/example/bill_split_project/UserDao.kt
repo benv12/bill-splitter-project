@@ -21,6 +21,9 @@ interface UserDao {
     @Query("SELECT user_name FROM user_table")
     fun getUsername(): Array<String>
 
+    @Query("SELECT pass_word FROM user_table")
+    fun getPassword(): Array<String>
+
     @Query("SELECT id FROM user_table")
     fun getID(): Array<Int>
 }

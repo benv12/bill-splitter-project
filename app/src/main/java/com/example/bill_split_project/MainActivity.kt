@@ -28,10 +28,10 @@ class MainActivity : AppCompatActivity() {
 
         appDb = AppDatabase.getDatabase(this)
 
-        enablePassword()
+
 
         binding.btnLogin.setOnClickListener{
-            mainActivity()
+            logIn()
 
         }
 
@@ -59,30 +59,6 @@ class MainActivity : AppCompatActivity() {
             }
     }
 
-
-
-    private fun enablePassword(){
-        binding.btnLogin.setEnabled(false)
-
-        binding.etPassword.addTextChangedListener(object: TextWatcher {
-            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
-
-            }
-
-            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
-
-            }
-
-            override fun afterTextChanged(s: Editable?) {
-                if(binding.etPassword.text.isNotEmpty()){
-                    binding.btnLogin.setEnabled(true)
-                }
-            }
-
-        })
-    }
-
-
     private fun mainActivity(){
 
         val username = binding.newUsername.text.toString()
@@ -106,6 +82,25 @@ class MainActivity : AppCompatActivity() {
 
         }
     }
+
+    private fun logIn(){
+
+        GlobalScope.launch{
+            val usernameArray: Array<String> = appDb.userDao().getUsername()
+            val passwordArray: Array<String> = appDb.userDao().getPassword()
+            if(usernameArray!=null&&passwordArray!=null){
+                val username1 = binding.newUsername.text.toString()
+                val password = binding.etPassword.text.toString()
+
+                for(i in 0..usernameArray.size-1){
+                    if(usernameArray[i].equals(username1)&&passwordArray[i].equals(password)) {
+                        sendData()
+                    }
+                }
+            }
+        }
+    }
+
 
     private fun deleteAll(){
         GlobalScope.launch{

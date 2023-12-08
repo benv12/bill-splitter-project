@@ -12,13 +12,15 @@ import android.widget.SeekBar
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import com.example.bill_split_project.databinding.FragmentHomeBinding
-
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
 
 
 class HomeFragment : Fragment() {
 
     private lateinit var binding: FragmentHomeBinding
     private var counter = 0
+    private lateinit var appDb: AppDatabase
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -31,6 +33,7 @@ class HomeFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        appDb = AppDatabase.getDatabase(requireActivity())
         homeActivity()
 
     }
@@ -47,9 +50,8 @@ class HomeFragment : Fragment() {
         val userArray = arguments?.getStringArray("passArray")
         val username = arguments?.getString("passUsername")
         val count = arguments?.getInt("counter")
-        val party = arguments?.getInt("passParty")
         if(userArray!=null && count!=null){
-            binding.tvParty.setText("Party: $party")
+            binding.tvParty.setText("Party: $count")
             counter = count
             binding.usernameLabel.setText(username)
             val userAdapter: ArrayAdapter<String> = ArrayAdapter(
@@ -78,7 +80,6 @@ class HomeFragment : Fragment() {
 
                         binding.myListView.adapter = userAdapter
                     }*/
-
     }
 
     private fun homeActivity(){
