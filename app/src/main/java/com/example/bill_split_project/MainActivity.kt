@@ -7,10 +7,12 @@ import android.text.Editable
 import android.text.TextWatcher
 import android.widget.EditText
 import android.widget.Toast
+import androidx.fragment.app.Fragment
 import com.example.bill_split_project.databinding.ActivityMainBinding
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
+import androidx.fragment.app.FragmentTransaction
 
 class MainActivity : AppCompatActivity() {
 
@@ -38,8 +40,15 @@ class MainActivity : AppCompatActivity() {
             deleteAll()
         }
 
+        binding.btnSignUpMain.setOnClickListener{
+            val intent = Intent(this, SignUpActivity::class.java)
+            startActivity(intent)
+        }
+
 
     }
+
+
 
     private fun sendData(){
         username = binding.newUsername.text.toString()
@@ -48,8 +57,6 @@ class MainActivity : AppCompatActivity() {
                 it.putExtra("passUsername", username)
                 startActivity(it)
             }
-
-
     }
 
 
@@ -98,9 +105,6 @@ class MainActivity : AppCompatActivity() {
             binding.etPassword.text.clear()
 
         }
-
-
-
     }
 
     private fun deleteAll(){

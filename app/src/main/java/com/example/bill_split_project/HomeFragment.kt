@@ -18,9 +18,7 @@ import com.example.bill_split_project.databinding.FragmentHomeBinding
 class HomeFragment : Fragment() {
 
     private lateinit var binding: FragmentHomeBinding
-    private lateinit var viewModel: viewModel
-
-
+    private var counter = 0
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -41,30 +39,19 @@ class HomeFragment : Fragment() {
 
             arguments?.let{
                val username = it.getString("passUsername")
-                binding.usernameLabel.text = username.toString()
+                binding.usernameLabel.text = "Hi, " + username.toString()
             }
     }
 
-    private fun retrieveArray() {
-        viewModel = ViewModelProvider(requireActivity()).get(viewModel::class.java)
-        val userArray = viewModel.sharedArray
-
-        val userAdapter: ArrayAdapter<String> = ArrayAdapter(
-            requireActivity(),
-            android.R.layout.simple_list_item_1,
-            userArray
-        )
-
-        binding.myListView.adapter = userAdapter
-    }
-
-    private fun test() {
-        val temp = arguments?.getStringArray("passArray")
-        if (temp != null) {
-            val userArray = Array(temp.size){""}
-            for(i in 0..userArray.size-1){
-                userArray[i]=temp[i]
-            }
+    private fun getData() {
+        val userArray = arguments?.getStringArray("passArray")
+        val username = arguments?.getString("passUsername")
+        val count = arguments?.getInt("counter")
+        val party = arguments?.getInt("passParty")
+        if(userArray!=null && count!=null){
+            binding.tvParty.setText("Party: $party")
+            counter = count
+            binding.usernameLabel.setText(username)
             val userAdapter: ArrayAdapter<String> = ArrayAdapter(
                 requireActivity(),
                 android.R.layout.simple_list_item_1,
@@ -73,11 +60,29 @@ class HomeFragment : Fragment() {
 
             binding.myListView.adapter = userAdapter
         }
+                    /*val args = this.arguments
+                    val userArray = args?.getStringArray("passArray")
+                    val username = args?.getString("passUsername")
+                    val count = args?.getInt("counter")
+                    val party = args?.getInt("passParty")
+
+                    if(userArray!=null && count!=null) {
+                        binding.tvParty.setText("Party: $party")
+                        counter = count
+                        binding.usernameLabel.setText(username)
+                        val userAdapter: ArrayAdapter<String> = ArrayAdapter(
+                            requireActivity(),
+                            android.R.layout.simple_list_item_1,
+                            userArray
+                        )
+
+                        binding.myListView.adapter = userAdapter
+                    }*/
+
     }
 
     private fun homeActivity(){
-        test()
-        //retrieveArray()
+        getData()
         retrieveData()
         binding.mySeekBar.setOnSeekBarChangeListener(object: SeekBar.OnSeekBarChangeListener{
             override fun onProgressChanged(seekBar: SeekBar?, progress: Int, fromUser: Boolean) {
@@ -131,8 +136,11 @@ class HomeFragment : Fragment() {
         val tip = binding.mySeekBar.progress
 
         val tipAmount = bill * tip / 100
-        val total = bill + tipAmount
-        var splitBill = bill + tipAmount
+        val total = (bill + tipAmount)
+        var splitBill = (bill+tipAmount)
+        if(counter!=0){
+            splitBill = (bill+tipAmount)/(counter+1)
+        }
 
         binding.myTip.text = "$%.2f".format(tipAmount)
         binding.tvBill.text = "$%.2f".format(total)

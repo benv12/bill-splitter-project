@@ -2,6 +2,7 @@ package com.example.bill_split_project
 
 import android.content.Intent
 import android.os.Bundle
+import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
@@ -16,16 +17,12 @@ import com.example.bill_split_project.databinding.FragmentInviteBinding
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 
-
+private const val TAG = "InviteFragment"
 class InviteFragment : Fragment() {
-
-    private lateinit var communicator: Communicator
 
     private lateinit var binding: FragmentInviteBinding
     private var counter = 0
     private lateinit var appDb: AppDatabase
-    private lateinit var viewModel: viewModel
-
 
     override fun onCreateView(
 
@@ -33,6 +30,7 @@ class InviteFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View? {
         // Inflate the layout for this fragment
+
         binding = FragmentInviteBinding.inflate(inflater, container, false)
         return binding.root
     }
@@ -55,7 +53,6 @@ class InviteFragment : Fragment() {
         retrieveData()
         listView()
 
-
     }
     private fun listView(){
         GlobalScope.launch {
@@ -65,7 +62,7 @@ class InviteFragment : Fragment() {
                 for(i in 0..user.size-1){
                     user[i] = temp[i]
                 }
-                val userArray = Array(user.size) { "" }
+               val userArray = Array(temp.size-1) { "" }
 
                 binding.myListView.choiceMode = ListView.CHOICE_MODE_MULTIPLE
                 binding.myListView.isVerticalScrollBarEnabled
@@ -79,19 +76,19 @@ class InviteFragment : Fragment() {
                 binding.myListView.adapter = userAdapter
 
                 binding.myListView.setOnItemClickListener(AdapterView.OnItemClickListener { parent, view, position, id ->
-                    counter++
-                    /*val isChecked = binding.myListView.isItemChecked(position)
-                    if (isChecked == false) {
-                        counter--
-                    }*/
+                    val isChecked = binding.myListView.isItemChecked(position)
                     val selectedItem: String = user[position]
+                    if(isChecked==false){
+                        //userArray.remove(selectedItem)
+                        counter--
+                    }
                     userArray[counter] = selectedItem
-
-                    /*if (isChecked) {
+                    if(isChecked==true){
                         counter++
-                    }*/
-                    passArray(userArray)
+                    }
                 })
+                add(userArray)
+
 
                 binding.mySearchView.setOnQueryTextListener(object :
                     SearchView.OnQueryTextListener {
@@ -112,28 +109,26 @@ class InviteFragment : Fragment() {
             }
         }
 
+    private fun add(array: Array<String>){
 
-    private fun shareArray(array: Array<String>){
-        viewModel = ViewModelProvider(requireActivity()).get(viewModel::class.java)
-        viewModel.sharedArray = array
+        val username = binding.inviteUsername.text.toString()
+        binding.btnAdd.setOnClickListener{
+            val intent = Intent(activity, HomeActivity::class.java)
+            intent.putExtra("passArray", array)
+            intent.putExtra("counter", counter)
+            intent.putExtra("passUsername", username)
+            intent.putExtra("passParty", counter)
+            startActivity(intent)
 
-    }
+            /*val bundle = Bundle()
+            bundle.putStringArray("passArray", array)
+            bundle.putInt("counter", counter)
+            bundle.putString("passUsername", username)
+            bundle.putInt("passParty", counter)
 
-    private fun test(array: Array<String>){
-        communicator = activity as Communicator
-        communicator.passDataCom(array)
-    }
-
-    private fun passArray(array: Array<String>){
-        val bundle = Bundle().apply{
-            putStringArray("passArray", array)
+            val fragment = HomeFragment()
+            fragment.arguments = bundle
+            fragmentManager?.beginTransaction()?.replace(R.id.frame_layout,fragment)?.commit()*/
         }
-        val intent = Intent(activity, HomeActivity::class.java)
-        intent.putExtras(bundle)
-
-        // Start the activity
-        startActivity(intent)
     }
-
-
 }

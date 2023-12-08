@@ -9,6 +9,7 @@ class HomeActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityHomeBinding
 
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityHomeBinding.inflate(layoutInflater)
@@ -20,8 +21,11 @@ class HomeActivity : AppCompatActivity() {
 
             when(it.itemId){
                 R.id.home_nav -> {
-                    //getArray(InviteFragment())
                     replaceFragment(HomeFragment())
+
+                }
+                R.id.add_nav ->{
+                    replaceFragment(AddFragment())
 
                 }
                 R.id.invite_nav -> {
@@ -39,24 +43,20 @@ class HomeActivity : AppCompatActivity() {
             }
             true
         }
-
     }
-
-    private fun getArray(fragment: Fragment){
-       val bundle = intent.extras
-
-        val userArray = bundle?.getStringArray("passArray")
-        if(userArray!=null) {
-            passArray(userArray, fragment)
+    private fun getData(fragment: Fragment){
+        val userArray = intent.getStringArrayExtra("passArray")
+        val username = intent.getStringExtra("passUsername")
+        val counter = intent.getIntExtra("counter", 0)
+        val party = intent.getIntExtra("passParty", 0)
+        if(userArray!=null){
+            val bundle = Bundle()
+            bundle.putStringArray("passArray", userArray)
+            bundle.putInt("counter", counter)
+            bundle.putString("passUsername", username)
+            bundle.putInt("passParty", party)
+            fragment.arguments = bundle
         }
-    }
-
-    private fun passArray(array: Array<String>, fragment: Fragment){
-        val bundle = Bundle().apply{
-            putStringArray("homeArray", array)
-        }
-        fragment.arguments = bundle
-
     }
 
     private fun passData(fragment: Fragment){
@@ -72,28 +72,11 @@ class HomeActivity : AppCompatActivity() {
 
     private fun replaceFragment(fragment: Fragment){
         passData(fragment)
-        getArray(fragment)
+        getData(fragment)
         val fragmentManager = supportFragmentManager
         val fragmentTransaction = fragmentManager.beginTransaction()
         fragmentTransaction.replace(R.id.frame_layout,fragment)
         fragmentTransaction.commit()
-    }
-
-    private fun test(){
-        val HomeFragment = HomeFragment()
-        supportFragmentManager.beginTransaction().replace(R.id.frame_layout, HomeFragment).commit()
-    }
-
-    private fun passDataCom(userArray: Array<String>) {
-        val bundle = Bundle()
-        bundle.putStringArray("passArray", userArray)
-
-        /*val transaction = this.supportFragmentManager.beginTransaction()
-        val fragment = InviteFragment()
-        fragment.arguments = bundle
-        transaction.replace(R.id.frame_layout, fragment)
-        transaction.commit()*/
-
     }
 
 }
